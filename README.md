@@ -18,9 +18,11 @@ whole task is to create animated spline wave using shaders
 3. Implement multipoint spline in shader:
     ![Spline Formula](/textures/spline.jpg)
 
-4. Draw spline on current canvas, using your shader and geometry, your have create, textured with earth texture.
-5. Make texture slowly moving along your spline width.
+4. Draw spline on current canvas, using your shader and geometry, your have created. It must be looking simular to image below. Feel free to play with width, period and amplitude of a wave.
+    ![Spline Formula](/textures/wave.jpg)
 
-That's it.
+5. Put texture on it and make texture slowly moving along your spline width. 
+
+That's it. Final image - slowly moving wave with slowly moving texture on it surface.
 
 
