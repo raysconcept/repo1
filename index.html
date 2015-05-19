@@ -1,0 +1,144 @@
+<html>
+<script src="./js/Three.js"></script>
+<script src="./js/OrbitControls.js"></script>
+
+<script>
+function createMyCustomGeometry(){
+    return new THREE.SphereGeometry(50,20,20);
+}
+</script>
+
+<script id ="vertex-shader" type="x-shader/x-vertex">
+
+    varying vec2 vUv;
+    void main(){
+        vUv = uv;
+        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+    }
+
+</script>
+
+<script id ="fragment-shader" type="x-shader/x-fragment">
+    uniform sampler2D texture;
+    uniform float time;
+    varying vec2 vUv;
+    void main(){
+        float tr = cos(time)*0.5 + 0.5;
+        vec4 texel = texture2D( texture, vUv);
+        gl_FragColor = vec4(texel.rgb, tr);
+    }
+</script>
+
+
+<script >
+
+    var UNIFORMS = {
+        "time": {type:"f", value:0.0},
+        "texture":{type:"t", value: THREE.ImageUtils.loadTexture( "textures/earth.png" )}
+            
+    }; // place all needed uniforms here;
+
+    
+    function getUniformUpdater(){
+        var totalTime = 0;
+        return function(dt){
+            totalTime += dt;
+            UNIFORMS.time.value = totalTime;
+            // Place here anything, that must be updated;
+        }
+        // This function allows to change uniform values in array above;
+    }
+    function startAnimation(renderer, camera, scene){
+        var updater = getUniformUpdater();
+        function animate( ) {
+            requestAnimationFrame( animate );
+            render();
+        }
+        var CT = Date.now();
+
+        function render() {
+            var t = Date.now();
+            var dt = t - CT;
+            updater(dt/1000);
+            CT = t;
+            renderer.render( scene, camera );
+        }
+        animate();
+    }
+    
+
+    function start(){
+        var geometry = createMyCustomGeometry();
+        var material = new THREE.ShaderMaterial({
+                vertexShader: document.getElementById("vertex-shader").innerText,
+                fragmentShader: document.getElementById("fragment-shader").innerText,
+                uniforms: UNIFORMS, 
+                transparent:true
+            });
+        
+
+        var renderer = new THREE.WebGLRenderer({ antialias:true, alpha: true });
+        var container = document.getElementById( 'container' );
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        var camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
+        camera.position.y = 500 ;
+        camera.position.x = 500 ;
+        camera.position.z = 200;
+        camera.lookAt(0,0,0);
+
+        scene = new THREE.Scene();
+        controls = new THREE.OrbitControls( camera, renderer.domElement );
+        // LIGHT
+        var light = new THREE.PointLight(0xffffff);
+        light.position.set(0,250,0);
+        scene.add(light);
+        // FLOOR
+        var floorTexture = new THREE.ImageUtils.loadTexture( 'textures/checkerboard.jpg' );
+        floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
+        floorTexture.repeat.set( 10, 10 );
+        var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+        var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+        var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.position.y = -0.5;
+        floor.rotation.x = Math.PI / 2;
+        scene.add(floor);
+        // SKYBOX/FOG
+        var skyBoxGeometry = new THREE.BoxGeometry( 10000, 10000, 10000 );
+        var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
+        var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
+        scene.add(skyBox);
+        scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
+
+
+        //ACTUAL Mesh
+        var mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        container.appendChild( renderer.domElement );
+        startAnimation(renderer, camera, scene);
+
+    }
+
+
+
+
+</script>
+<style>
+    body{
+        width:100%;
+        height:100%;
+        margin:0;
+        padding:0;
+    }
+    #container{
+        width:100%;
+        height:100%;
+    }
+</style>
+<body onload="start();">
+    <div id="container">
+    </div>
+
+</body>
+<html>
