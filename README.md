@@ -1,7 +1,8 @@
-H1 Test task
+# Test task
 
 whole task is to create animated spline wave using shaders
-0. Clone this source and put it somewhere online (for instance <username>.github.io/some.html), make it working.
+
+1. Clone this source and put it somewhere online (for instance <username>.github.io/some.html), make it working.
 
 1. change  createMyCustomGeometry, which is easy to manipulate for spline functions: It must be rectangular face with properties:
    * have N-width segments.
