@@ -19,7 +19,7 @@ whole task is to create animated spline wave using shaders
     ![Spline Formula](/textures/spline.jpg)
 
 4. Draw spline on current canvas, using your shader and geometry, your have created. It must be looking simular to image below. Feel free to play with width, period and amplitude of a wave.
-    ![Spline Formula](/textures/wave.jpg)
+    ![Wave image](/textures/wave.png)
 
 5. Put texture on it and make texture slowly moving along your spline width. 
 
